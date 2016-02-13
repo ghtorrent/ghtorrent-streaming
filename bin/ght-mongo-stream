@@ -1,0 +1,97 @@
+#!/usr/bin/env ruby
+
+require 'mongo'
+require 'mongoriver'
+require 'azure'
+require 'yaml'
+require 'json'
+
+require 'streaming'
+
+include Settings
+
+def settings
+  @settings
+end
+
+class BSON::OrderedHash
+
+  # Convert a BSON result to a +Hash+
+  def to_h
+    inject({}) do |acc, element|
+      k, v = element;
+      acc[k] = if v.class == Array then
+                 v.map{|x| if x.class == BSON::OrderedHash then x.to_h else x end}
+               elsif v.class == BSON::OrderedHash then
+                 v.to_h
+               else
+                 v
+               end;
+      acc
+    end
+  end
+
+  def to_json
+    to_h.to_json
+  end
+end
+
+class GHTorrentReplicator < Mongoriver::AbstractOutlet
+
+  def initialize
+    @consumers = []
+  end
+
+  def add_consumer(consumer)
+    @consumers << consumer
+  end
+
+  def update_optime(timestamp)
+    puts "Update optime: #{timestamp}"
+    @consumers.each { |c| c.update_timestamp(timestamp) }
+  end
+
+  def insert(db_name, collection_name, document)
+    puts "Insert to #{db_name}.#{collection_name}: #{document['_id']}"
+    @consumers.each { |c| c.write(document.to_json) }
+  end
+
+  def remove(db_name, collection_name, document)
+    puts "Remove from #{db_name}.#{collection_name}: #{document['_id']}"
+    @consumers.each { |c| c.write(document.to_json) }
+  end
+
+  def update(db_name, collection_name, selector, update)
+    puts "Update #{db_name}.#{collection_name}: #{document['_id']}"
+    @consumers.each { |c| c.write(document.to_json) }
+  end
+
+end
+
+@settings = YAML::load_file('config.yaml')
+
+mongo = Mongo::MongoClient.from_uri(conf(:mongo_uri, false))
+
+tailer = Mongoriver::Tailer.new([mongo], :existing)
+outlet = GHTorrentReplicator.new
+
+conf(:outputs).each do |setting|
+  case setting
+    when 'azure'
+      azure = AzureSbHttp.new
+      azure.configure(settings)
+      outlet.add_consumer(azure)
+
+    when 'amqp'
+      amqp = AMQP.new
+      amqp.configure(settings)
+      outlet.add_consumer(amqp)
+    else
+      raise StandardError.new("Don't know output stream #{setting}")
+  end
+end
+
+stream = Mongoriver::Stream.new(tailer, outlet)
+stream.run_forever(BSON::Timestamp.new(0, 1))
+#stream.run_forever(Time.now)
+

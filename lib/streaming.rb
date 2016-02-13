@@ -1,0 +1,5 @@
+require 'version'
+require 'streaming/settings'
+require 'streaming/output_stream'
+require 'streaming/azure_sb_http'
+require 'streaming/amqp'
