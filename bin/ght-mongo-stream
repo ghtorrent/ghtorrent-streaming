@@ -68,7 +68,12 @@ class GHTorrentReplicator < Mongoriver::AbstractOutlet
 
 end
 
-@settings = YAML::load_file('config.yaml')
+if ARGV[0].nil?
+  puts "usage: ght-mongo-streamer config.yaml"
+  exit(1)
+end
+
+@settings = YAML::load_file(ARGV[0])
 
 mongo = Mongo::MongoClient.from_uri(conf(:mongo_uri, false))
 
