@@ -8,7 +8,7 @@ class OutputStream
     @timestamp = timestamp
   end
 
-  def write(msg)
+  def write(msg, collection, op_type)
     raise StandardError('Unimplemented')
   end
 

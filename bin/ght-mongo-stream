@@ -9,6 +9,7 @@ require 'json'
 require 'streaming'
 
 include Settings
+include Logging
 
 def settings
   @settings
@@ -47,23 +48,23 @@ class GHTorrentReplicator < Mongoriver::AbstractOutlet
   end
 
   def update_optime(timestamp)
-    puts "Update optime: #{timestamp}"
+    debug "Update optime: #{timestamp}"
     @consumers.each { |c| c.update_timestamp(timestamp) }
   end
 
   def insert(db_name, collection_name, document)
-    puts "Insert to #{db_name}.#{collection_name}: #{document['_id']}"
-    @consumers.each { |c| c.write(document.to_json) }
+    debug "Insert to #{db_name}.#{collection_name}: #{document['_id']}"
+    @consumers.each { |c| c.write(document.to_json, collection_name, :insert) }
   end
 
   def remove(db_name, collection_name, document)
-    puts "Remove from #{db_name}.#{collection_name}: #{document['_id']}"
-    @consumers.each { |c| c.write(document.to_json) }
+    debug "Remove from #{db_name}.#{collection_name}: #{document['_id']}"
+    @consumers.each { |c| c.write(document.to_json, collection_name, :remove) }
   end
 
   def update(db_name, collection_name, selector, update)
-    puts "Update #{db_name}.#{collection_name}: #{document['_id']}"
-    @consumers.each { |c| c.write(document.to_json) }
+    debug "Update #{db_name}.#{collection_name}: #{document['_id']}"
+    @consumers.each { |c| c.write(document.to_json, collection_name, :update) }
   end
 
 end
@@ -97,6 +98,4 @@ conf(:outputs).each do |setting|
 end
 
 stream = Mongoriver::Stream.new(tailer, outlet)
-stream.run_forever(BSON::Timestamp.new(0, 1))
-#stream.run_forever(Time.now)
-
+stream.run_forever(Time.now)

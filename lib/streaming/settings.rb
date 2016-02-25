@@ -15,14 +15,13 @@ module Settings
       :amqp_username => 'amqp.username',
       :amqp_password => 'amqp.password',
       :amqp_exchange => 'amqp.exchange',
-      :amqp_prefetch => 'amqp.prefetch',
+      :amqp_persistent => 'amqp.persistent',
+      :amqp_msgttl   => 'amqp.msgttl',
 
       :mongo_uri     => 'mongo',
-
       :outputs       => 'outputs',
 
       :logging_level => 'logging.level',
-      :logging_uniq  => 'logging.uniq',
       :logging_file  => 'logging.file'
   }
 
@@ -37,13 +36,13 @@ module Settings
       :amqp_username => 'github',
       :amqp_password => 'github',
       :amqp_exchange => 'github',
-      :amqp_prefetch  => 1,
+      :amqp_persistent => false,
+      :amqp_msgttl   => 60000,
 
       :mongo_uri     => 'mongodb://127.0.0.1:27017/github',
       :outputs       => [],
 
       :logging_level => 'info',
-      :logging_uniq  => '',
       :logging_file  => 'stdout'
   }
 
