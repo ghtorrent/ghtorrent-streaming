@@ -43,7 +43,7 @@ class AMQP < OutputStream
 
     rk_suffix = case collection
                   when 'events'
-                    msg['type'].downcase.split(/event/)[0]
+                    JSON.parse(msg)['type'].downcase.split(/event/)[0]
                   else
                     collection
                 end
