@@ -6,6 +6,8 @@ class AMQP < OutputStream
   include Settings
   include Logging
 
+  attr_reader :exchange, :ch
+
   def settings
     @settings
   end
@@ -18,7 +20,7 @@ class AMQP < OutputStream
                      :password => conf(:amqp_password))
     conn.start
 
-    ch  = conn.create_channel
+    @ch  = conn.create_channel
     info "Connection to RabbimMQ at #{conf(:amqp_host)} succeded"
 
     @exchange = ch.topic(conf(:amqp_exchange), :durable => true,
