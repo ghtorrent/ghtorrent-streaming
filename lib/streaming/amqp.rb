@@ -30,9 +30,6 @@ class AMQP < OutputStream
     @persistent = conf(:amqp_persistent)
     info "Default msg persistence: #{conf(:amqp_persistent)}"
 
-    @msgttl = conf(:amqp_msgttl)
-    info "Default msg ttl: #{conf(:amqp_msgttl)}"
-
   end
 
   def write(msg, collection, op_type)
@@ -56,7 +53,6 @@ class AMQP < OutputStream
 
     @exchange.publish msg,
                       :persistent => @persistent,
-                      :expiration => @msgttl,
                       :routing_key => rk
   end
 

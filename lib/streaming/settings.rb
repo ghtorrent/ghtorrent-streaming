@@ -16,7 +16,6 @@ module Settings
       :amqp_password => 'amqp.password',
       :amqp_exchange => 'amqp.exchange',
       :amqp_persistent => 'amqp.persistent',
-      :amqp_msgttl   => 'amqp.msgttl',
 
       :mongo_uri     => 'mongo',
       :outputs       => 'outputs',
@@ -37,7 +36,6 @@ module Settings
       :amqp_password => 'github',
       :amqp_exchange => 'github',
       :amqp_persistent => false,
-      :amqp_msgttl   => 60000,
 
       :mongo_uri     => 'mongodb://127.0.0.1:27017/github',
       :outputs       => [],
