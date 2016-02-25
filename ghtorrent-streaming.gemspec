@@ -1,7 +1,7 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'streaming/streaming/version'
+require 'version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'streaming-streaming'
@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'azure'
   spec.add_development_dependency 'bunny'
-  spec.add_development_dependency 'mongo'
+  spec.add_development_dependency 'mongo', '~> 1.12.5'
+  spec.add_development_dependency 'bson_ext', '~> 1.12.5'
   spec.add_development_dependency 'mongoriver'
 end
