@@ -92,6 +92,10 @@ conf(:outputs).each do |setting|
       amqp = AMQP.new
       amqp.configure(settings)
       outlet.add_consumer(amqp)
+    when 'gpubsub'
+      gpubsub = GPubSub.new
+      gpubsub.configure(settings)
+      outlet.add_consumer(gpubsub)
     else
       raise StandardError.new("Don't know output stream #{setting}")
   end

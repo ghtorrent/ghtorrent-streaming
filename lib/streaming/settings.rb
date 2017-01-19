@@ -1,7 +1,6 @@
 require 'yaml'
 require 'tmpdir'
 
-
 module Settings
 
   CONFIGKEYS = {
@@ -19,6 +18,8 @@ module Settings
 
       :mongo_uri     => 'mongo',
       :outputs       => 'outputs',
+
+      :gpubsub_project_id => 'gpubsub_project_id',
 
       :logging_level => 'logging.level',
       :logging_file  => 'logging.file'
@@ -39,6 +40,8 @@ module Settings
 
       :mongo_uri     => 'mongodb://127.0.0.1:27017/github',
       :outputs       => [],
+
+      :gpubsub_project_id => '',
 
       :logging_level => 'info',
       :logging_file  => 'stdout'
