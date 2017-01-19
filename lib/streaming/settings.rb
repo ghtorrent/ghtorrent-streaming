@@ -19,8 +19,9 @@ module Settings
       :mongo_uri     => 'mongo',
       :outputs       => 'outputs',
 
-      :gpubsub_project_id => 'gpubsub_project_id',
-
+      :gpubsub_project_id => 'gpubsub.project_id',
+      :gpubsub_keyfile => 'gpubsub.keyfile',
+      
       :logging_level => 'logging.level',
       :logging_file  => 'logging.file'
   }
@@ -42,6 +43,7 @@ module Settings
       :outputs       => [],
 
       :gpubsub_project_id => '',
+      :gpubsub_keyfile => 'gpubsub.key',
 
       :logging_level => 'info',
       :logging_file  => 'stdout'

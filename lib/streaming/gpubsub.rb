@@ -13,7 +13,8 @@ class GPubSub < OutputStream
   end
 
   def configure(settings)
-    @pubsub = Google::Cloud::Pubsub.new project: conf(:gpubsub_project_id)
+    @pubsub = Google::Cloud::Pubsub.new({project => conf(:gpubsub_project_id), 
+                                         keyfile => conf(:gpubsub_keyfile)})
 
     %w(commit_comments commits events followers forks issue_comments
        issue_events issues org_members pull_request_comments
