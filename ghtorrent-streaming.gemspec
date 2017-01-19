@@ -35,4 +35,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'mongo', '~> 1.12.5'
   spec.add_development_dependency 'bson_ext', '~> 1.12.5'
   spec.add_development_dependency 'mongoriver'
+  spec.add_development_dependency 'google-cloud-pubsub'
 end

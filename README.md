@@ -1,3 +1,5 @@
 # ghtorrent-streaming
 
-Streaming updates from the GHTorrent databse
+Streaming updates from the GHTorrent databases
+
+
