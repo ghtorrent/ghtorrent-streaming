@@ -87,15 +87,17 @@ conf(:outputs).each do |setting|
       azure = AzureSbHttp.new
       azure.configure(settings)
       outlet.add_consumer(azure)
-
+      debug "Adding Azure consumer"
     when 'amqp'
       amqp = AMQP.new
       amqp.configure(settings)
       outlet.add_consumer(amqp)
+      debug "Adding AMQP consumer"
     when 'gpubsub'
       gpubsub = GPubSub.new
       gpubsub.configure(settings)
       outlet.add_consumer(gpubsub)
+      debug "Adding pubsub consumer"
     else
       raise StandardError.new("Don't know output stream #{setting}")
   end

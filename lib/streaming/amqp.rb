@@ -33,7 +33,7 @@ class AMQP < OutputStream
   end
 
   def write(msg, collection, op_type)
-
+    ts = Time.now
     rk_prefix = case collection
                   when 'events'
                     'evt'
@@ -49,7 +49,7 @@ class AMQP < OutputStream
                 end
 
     rk = "#{rk_prefix}.#{rk_suffix}.#{op_type}"
-    debug "Publishing msg with routing key #{rk}"
+    debug "Publishing msg with routing key #{rk}: #{Time.now - ts} ms"
 
     @exchange.publish msg,
                       :persistent => @persistent,
