@@ -1,0 +1,37 @@
+mongo:
+  host: 127.0.0.1
+  port: 27017
+  db: test          # DB name to store commits to
+  username: uname   # User name to connect to Mongo
+  password: passwd  # Password for mongo
+  replicas:         # Replicas to use
+
+azure:
+  servicebus:
+    namespace: 'ns'
+    key: 'key'
+    topic: 'mongoevents'
+    ttl: 'PT1M'
+
+amqp:
+  host: 127.0.0.1
+  port: 5672
+  username: streamer   # Username to connect to the queue
+  password: streamer
+  exchange: ghtstream
+  persistent: false     # All messages are by default ephemeral
+  msgttl: 60000         # One minute
+
+gpubsub:
+  project_id: "ghtorrent"
+  keyfile: "gpubsub.key"
+
+# Possible values: azure, azure-amqp, amqp, gpubsub
+#outputs: [amqp, gpubsub]
+outputs: []
+
+logging:
+  # debug < info < warn < error, for decreasing log output
+  level: "debug"
+  # stdout or stderr to log to system streams. A file name to log to this file.
+  file: "stdout"

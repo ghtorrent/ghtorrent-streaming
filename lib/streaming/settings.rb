@@ -16,14 +16,20 @@ module Settings
       :amqp_exchange => 'amqp.exchange',
       :amqp_persistent => 'amqp.persistent',
 
-      :mongo_uri     => 'mongo',
       :outputs       => 'outputs',
 
       :gpubsub_project_id => 'gpubsub.project_id',
       :gpubsub_keyfile => 'gpubsub.keyfile',
       
       :logging_level => 'logging.level',
-      :logging_file  => 'logging.file'
+      :logging_file  => 'logging.file',
+
+      :mongo_host => "mongo.host",
+      :mongo_port => "mongo.port",
+      :mongo_db => "mongo.db",
+      :mongo_username => "mongo.username",
+      :mongo_passwd => "mongo.password",
+      :mongo_replicas => "mongo.replicas"
   }
 
   DEFAULTS = {
@@ -39,14 +45,20 @@ module Settings
       :amqp_exchange => 'github',
       :amqp_persistent => false,
 
-      :mongo_uri     => 'mongodb://127.0.0.1:27017/github',
       :outputs       => [],
 
       :gpubsub_project_id => '',
       :gpubsub_keyfile => 'gpubsub.key',
 
       :logging_level => 'info',
-      :logging_file  => 'stdout'
+      :logging_file  => 'stdout',
+
+      :mongo_host => "localhost",
+      :mongo_port => "27017",
+      :mongo_db => "github",
+      :mongo_username => "ghtorrent",
+      :mongo_passwd => "",
+      :mongo_replicas => ""
   }
 
   def conf(key, use_default = true)
