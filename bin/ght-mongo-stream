@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'mongo'
-require 'mongoriver'
 require 'azure'
 require 'yaml'
 require 'json'
@@ -37,7 +36,7 @@ class BSON::OrderedHash
   end
 end
 
-class GHTorrentReplicator < Mongoriver::AbstractOutlet
+class EventDispatcher
 
   def initialize
     @consumers = []
@@ -47,17 +46,12 @@ class GHTorrentReplicator < Mongoriver::AbstractOutlet
     @consumers << consumer
   end
 
-  def update_optime(timestamp)
-    debug "Update optime: #{timestamp}"
-    @consumers.each { |c| c.update_timestamp(timestamp) }
-  end
-
   def insert(db_name, collection_name, document)
-    debug "Insert to #{db_name}.#{collection_name}: #{document['_id']}"
+    puts "Insert to #{db_name}.#{collection_name}: #{document['_id']}"
     @consumers.each { |c| c.write(document.to_json, collection_name, :insert) }
   end
 
-  def remove(db_name, collection_name, document)
+  def delete(db_name, collection_name, document)
     debug "Remove from #{db_name}.#{collection_name}: #{document['_id']}"
     @consumers.each { |c| c.write(document.to_json, collection_name, :remove) }
   end
@@ -70,16 +64,36 @@ class GHTorrentReplicator < Mongoriver::AbstractOutlet
 end
 
 if ARGV[0].nil?
-  puts "usage: ght-mongo-streamer config.yaml"
+  puts "usage: ght-mongo-streamer conf.yaml"
   exit(1)
 end
 
 @settings = YAML::load_file(ARGV[0])
 
-mongo = Mongo::MongoClient.from_uri(conf(:mongo_uri, false))
+hosts = if conf(:mongo_replicas).nil? then
+  ["#{conf(:mongo_host)}:#{conf(:mongo_port)}"]
+else
+  ["#{conf(:mongo_host)}:#{conf(:mongo_port)}"] + conf(:mongo_replicas).strip.split(/ /)
+end
 
-tailer = Mongoriver::Tailer.new([mongo], :existing)
-outlet = GHTorrentReplicator.new
+Mongo::Logger.logger.level = Logger::WARN
+mongo = Mongo::Client.new(hosts,
+    :database => conf(:mongo_db),
+    :password => conf(:mongo_passwd),
+    :user => conf(:mongo_username),
+    :auth_source => 'admin',
+    :read => {
+      :mode => :secondary_preferred
+    },
+    :retry_reads => true,
+    :retry_writes => true,
+    :write_concern => {
+      :w => "majority",
+      :j => true
+    }
+)
+
+outlet = EventDispatcher.new
 
 conf(:outputs).each do |setting|
   case setting
@@ -103,5 +117,26 @@ conf(:outputs).each do |setting|
   end
 end
 
-stream = Mongoriver::Stream.new(tailer, outlet)
-stream.run_forever(Time.now)
+token = nil
+stream = mongo.watch([], resume_after: token)
+
+while true
+  begin
+    enum = stream.to_enum
+    while doc = enum.next
+      case doc[:operationType]
+      when /insert/ then
+        outlet.insert(doc[:ns][:db], doc[:ns][:coll], doc[:fullDocument])
+      else
+        puts "Uknown event type: #{doc[:operationType]}"
+      end
+      token = stream.resume_token
+    end
+  rescue SystemExit, Interrupt
+    stream.close
+    puts "Done"
+    exit(0)
+  rescue Mongo::Error
+    sleep 1
+  end
+end
