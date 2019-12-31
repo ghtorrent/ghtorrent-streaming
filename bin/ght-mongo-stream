@@ -47,7 +47,7 @@ class EventDispatcher
   end
 
   def insert(db_name, collection_name, document)
-    puts "Insert to #{db_name}.#{collection_name}: #{document['_id']}"
+    debug "Insert to #{db_name}.#{collection_name}: #{document['_id']}"
     @consumers.each { |c| c.write(document.to_json, collection_name, :insert) }
   end
 
@@ -138,5 +138,6 @@ while true
     exit(0)
   rescue Mongo::Error
     sleep 1
+    stream = mongo.watch([], resume_after: token)
   end
 end

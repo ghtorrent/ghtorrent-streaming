@@ -13,6 +13,7 @@ module Settings
       :amqp_port => 'amqp.port',
       :amqp_username => 'amqp.username',
       :amqp_password => 'amqp.password',
+      :amqp_vhost => 'amqp.vhost',
       :amqp_exchange => 'amqp.exchange',
       :amqp_persistent => 'amqp.persistent',
 
@@ -42,6 +43,7 @@ module Settings
       :amqp_port => 5672,
       :amqp_username => 'github',
       :amqp_password => 'github',
+      :amqp_vhost => '/',
       :amqp_exchange => 'github',
       :amqp_persistent => false,
 

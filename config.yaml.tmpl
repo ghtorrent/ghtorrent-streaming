@@ -18,7 +18,8 @@ amqp:
   port: 5672
   username: streamer   # Username to connect to the queue
   password: streamer
-  exchange: ghtstream
+  exchange: ghtstreams
+  vhost: /
   persistent: false     # All messages are by default ephemeral
   msgttl: 60000         # One minute
 

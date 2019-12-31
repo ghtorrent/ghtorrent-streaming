@@ -17,7 +17,8 @@ class AMQP < OutputStream
     conn = Bunny.new(:host => conf(:amqp_host),
                      :port => conf(:amqp_port),
                      :username => conf(:amqp_username),
-                     :password => conf(:amqp_password))
+                     :password => conf(:amqp_password),
+                     :vhost => conf(:amqp_vhost))
     conn.start
 
     @ch  = conn.create_channel
@@ -33,7 +34,7 @@ class AMQP < OutputStream
   end
 
   def write(msg, collection, op_type)
-    ts = Time.now
+    ts = Time.now.to_f * 1000
     rk_prefix = case collection
                   when 'events'
                     'evt'
@@ -49,7 +50,7 @@ class AMQP < OutputStream
                 end
 
     rk = "#{rk_prefix}.#{rk_suffix}.#{op_type}"
-    debug "Publishing msg with routing key #{rk}: #{Time.now - ts} ms"
+    debug "Publishing msg with routing key #{rk}: #{Time.now.to_f * 1000 - ts} ms"
 
     @exchange.publish msg,
                       :persistent => @persistent,
